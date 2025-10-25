@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tathastu Gifting Solutions - Your Gifting Wish, Granted</title>
+    <!-- Tailwind CSS CDN --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font: Inter --><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        // Custom Tailwind configuration
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        't-maroon': '#6D2828', // Rich maroon
+                        't-red': '#DC2626',   // Bright red
+                        't-gold': '#D97706',  // Deep yellow/gold
+                        't-light': '#FFFBEB', // Warm off-white (bg)
+                        't-dark': '#451A03',  // Dark brown (text)
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Small style for scrollbar - optional but adds polish */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFFBEB;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D97706;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6D2828;
+        }
+    </style>
+</head>
+<body class="bg-t-light font-sans text-t-dark">
+
+    <!-- Header & Navigation --><header class="bg-t-light/90 sticky top-0 z-50 backdrop-blur-md shadow-sm">
+        <nav class="container mx-auto max-w-7xl px-4 md:px-6 py-2 flex justify-center items-center">
+            <!-- Logo --><a href="#" class="block">
+                <img src="https://i.ibb.co/JDWFVxH/photo-2025-10-25-23-24-33-removebg-preview.png" alt="Tathastu Gifting Solutions Logo" class="h-20 w-auto" onerror="this.onerror=null; this.src='https://placehold.co/200x80/6D2828/FFFBEB?text=Tathastu';">
+            </a>
+        </nav>
+    </header>
+
+    <main>
+
+        <!-- Hero Section --><section id="home" class="relative min-h-[90vh] flex items-center justify-center text-center p-8 overflow-hidden">
+            <!-- Background Color --><div class="absolute inset-0 bg-t-light z-0"></div>
+            <!-- Hero Content --><div class="relative z-20 flex flex-col items-center">
+                <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl font-bold mb-4 text-t-maroon">
+                    Your Vision, Our Creation
+                </h1>
+                <p class="text-xl md:text-2xl text-t-dark/80 font-light max-w-3xl mb-10">
+                    Discover bespoke hampers and curated gifts that speak from the heart.
+                    At Tathastu, we turn your thoughtful intentions into unforgettable memories.
+                </p>
+                <a href="#gallery" class="bg-t-maroon text-t-light font-bold text-lg px-10 py-4 rounded-full shadow-2xl transform hover:scale-105 hover:bg-t-red transition-all duration-300">
+                    Explore Our Collections
+                </a>
+            </div>
+        </section>
+
+        <!-- Services Section --><section id="services" class="py-20 md:py-28 bg-t-light">
+            <div class="container mx-auto max-w-6xl px-4 md:px-6 text-center">
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-t-maroon mb-4">More Than Just Gifts</h2>
+                <p class="text-lg text-t-dark max-w-2xl mx-auto mb-16">
+                    We are a complete solution for every occasion, ensuring every detail is perfect.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                    <!-- Service 1: Bespoke Curation --><div class="bg-white p-8 rounded-xl shadow-lg border-b-4 border-t-gold transform hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                        <div class="w-20 h-20 bg-t-gold/10 text-t-gold rounded-full flex items-center justify-center mx-auto mb-6">
+                            <!-- Icon: Gift --><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-t-maroon mb-3">Bespoke Curation</h3>
+                        <p class="text-t-dark/80">
+                            From personal milestones to grand gestures, we design gifts that are uniquely yours.
+                        </p>
+                    </div>
+                    
+                    <!-- Service 2: Corporate Gifting --><div class="bg-white p-8 rounded-xl shadow-lg border-b-4 border-t-red transform hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                        <div class="w-20 h-20 bg-t-red/10 text-t-red rounded-full flex items-center justify-center mx-auto mb-6">
+                            <!-- Icon: Briefcase --><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m16 0h-2M2 6h-2m16 0h2M2 6h2M2 6v11a2 2 0 002 2h16a2 2 0 002-2V6" />
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-t-maroon mb-3">Corporate Gifting</h3>
+                        <p class="text-t-dark/80">
+                            Elevate your brand with premium, branded gifts for clients, partners, and employees.
+                        </p>
+                    </div>
+                    
+                    <!-- Service 3: Occasion Specialists --><div class="bg-white p-8 rounded-xl shadow-lg border-b-4 border-t-maroon transform hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                        <div class="w-20 h-20 bg-t-maroon/10 text-t-maroon rounded-full flex items-center justify-center mx-auto mb-6">
+                            <!-- Icon: Sparkles --><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-t-maroon mb-3">Occasion Specialists</h3>
+                        <p class="text-t-dark/80">
+                            Weddings, festivals, or 'just because' – we have the perfect collection for every event.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery / Collections --><section id="gallery" class="py-20 md:py-28 bg-white">
+            <div class="container mx-auto max-w-7xl px-4 md:px-6">
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-t-maroon text-center mb-16">
+                    Our Curated Collections
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Image 1 --><div class="group relative aspect-square overflow-hidden rounded-xl shadow-lg">
+                        <img src="https://i.ibb.co/9mbdtBBg/Generated-Image-October-25-2025-11-48-PM.png" alt="Festive Hampers" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <h4 class="absolute bottom-0 left-0 p-6 text-white text-2xl font-bold">
+                            Festive Hampers
+                        </h4>
+                    </div>
+                    
+                    <!-- Image 2 --><div class="group relative aspect-square overflow-hidden rounded-xl shadow-lg">
+                        <img src="https://i.ibb.co/nsnMvn21/Generated-Image-October-25-2025-11-50-PM.png" alt="Gourmet Boxes" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <h4 class="absolute bottom-0 left-0 p-6 text-white text-2xl font-bold">
+                            Gourmet Boxes
+                        </h4>
+                    </div>
+                    
+                    <!-- Image 3 --><div class="group relative aspect-square overflow-hidden rounded-xl shadow-lg">
+                        <img src="https://i.ibb.co/LXtyDBKQ/Generated-Image-October-25-2025-11-51-PM.png" alt="Personalized Keepsakes" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <h4 class="absolute bottom-0 left-0 p-6 text-white text-2xl font-bold">
+                            Personalized Keepsakes
+                        </h4>
+                    </div>
+                    
+                    <!-- Image 4 --><div class="group relative aspect-square overflow-hidden rounded-xl shadow-lg">
+                        <img src="https://i.ibb.co/qLW7Zh6c/Generated-Image-October-25-2025-11-53-PM.png" alt="Luxury Corporate" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <h4 class="absolute bottom-0 left-0 p-6 text-white text-2xl font-bold">
+                            Luxury Corporate
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- About / Our Promise --><section id="about" class="py-20 md:py-28 bg-t-light">
+            <div class="container mx-auto max-w-6xl px-4 md:px-6">
+                <div class="flex flex-col md:flex-row items-center gap-12 md:gap-16">
+                    <div class="w-full md:w-1/2">
+                        <img src="https://placehold.co/600x450/6D2828/FFFBEB?text=Our+Promise" alt="Crafting a gift" class="rounded-xl shadow-2xl w-full object-cover">
+                    </div>
+                    <div class="w-full md:w-1/2 text-center md:text-left">
+                        <span class="text-t-gold font-semibold text-lg">Our Story</span>
+                        <h2 class="font-serif text-4xl md:text-5xl font-bold text-t-maroon mt-2 mb-6">
+                            Crafting Joy, One Gift at a Time
+                        </h2>
+                        <p class="text-lg text-t-dark/80 mb-6 leading-relaxed">
+                            "Tathastu" was born from a simple idea: that a gift should be more than just an item, it should be an experience. It's a wish for happiness, a token of appreciation, a way to connect.
+                        </p>
+                        <p class="text-lg text-t-dark/80 leading-relaxed">
+                            We meticulously source the finest products, partner with local artisans, and package every order with unparalleled care. Our promise is to deliver not just a gift, but a moment of pure delight.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section --><section id="contact" class="py-20 md:py-28 bg-white" style="background-image: linear-gradient(to top, #FFFBEB 0%, #FFFFFF 50%);">
+            <div class="container mx-auto max-w-4xl px-4 md:px-6">
+                <div class="bg-white p-8 md:p-12 rounded-2xl shadow-2xl border-t-4 border-t-maroon">
+                    <h2 class="font-serif text-4xl md:text-5xl font-bold text-t-maroon text-center mb-4">
+                        Let's Create Something Special
+                    </h2>
+                    <p class="text-lg text-t-dark text-center max-w-xl mx-auto mb-10">
+                        Have an idea? Need a quote for a bulk order?
+                        Our gifting consultants are here to help bring your vision to life.
+                    </p>
+                    
+                    <form action="#" method="POST" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-t-dark mb-1">Full Name</label>
+                                <input type="text" id="name" class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-t-gold" placeholder="Your Name">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-t-dark mb-1">Email Address</label>
+                                <input type="email" id="email" class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-t-gold" placeholder="you@example.com">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-t-dark mb-1">Your Message</label>
+                            <textarea id="message" rows="5" class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-t-gold" placeholder="Tell us about your gifting needs..."></textarea>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="bg-t-maroon text-white font-bold text-lg px-10 py-3 rounded-full shadow-lg hover:bg-t-red hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300">
+                                Send Your Inquiry
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer --><footer class="bg-t-maroon text-t-light/80 py-16">
+        <div class="container mx-auto max-w-7xl px-4 md:px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Column 1: Logo & About --><div class="md:col-span-2">
+                    <a href="#" class="font-serif text-3xl font-bold text-white mb-4 block">
+                        Tathastu
+                    </a>
+                    <p class="max-w-md">
+                        Your Gifting Wish, Granted. Bespoke hampers, corporate gifts, and curated collections for all of life's special moments.
+                    </p>
+                </div>
+                
+                <!-- Column 2: Quick Links --><div>
+                    <h5 class="text-lg font-bold text-white mb-4">Quick Links</h5>
+                    <ul class="space-y-2">
+                        <li><a href="#services" class="hover:text-t-gold transition-colors">Services</a></li>
+                        <li><a href="#gallery" class="hover:text-t-gold transition-colors">Gallery</a></li>
+                        <li><a href="#about" class="hover:text-t-gold transition-colors">Our Story</a></li>
+                        <li><a href="#contact" class="hover:text-t-gold transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Column 3: Contact Info --><div>
+                    <h5 class="text-lg font-bold text-white mb-4">Get in Touch</h5>
+                    <ul class="space-y-2">
+                        <li>Email: <a href="mailto:hello@tathastu.com" class="hover:text-t-gold transition-colors">hello@tathastu.com</a></li>
+                        <li>Phone: <a href="tel:+911234567890" class="hover:text-t-gold transition-colors">+91 12345 67890</a></li>
+                        <!-- Add Social Icons here if needed --></ul>
+                </div>
+            </div>
+            
+            <!-- Copyright Bar --><div class="mt-12 pt-8 border-t border-t-red/30 text-center text-t-light/60">
+                &copy; 2025 Tathastu Gifting Solutions. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
+
+
+
