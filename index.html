@@ -541,7 +541,7 @@
                 </div>
 
                 <!-- Center: Logo (Added ID and Transition Classes) -->
-                <div id="header-logo" class="flex-shrink-0 transition-all duration-300 ease-in-out transform origin-center overflow-hidden">
+                <div id="header-logo" class="flex-shrink-0 transition-all duration-300 ease-in-out transform origin-center overflow-hidden cursor-pointer">
                     <img src="https://i.ibb.co/n8r4SFNH/1002397847-removebg-preview-1.png" alt="Guru Sampoorna Logo" class="w-20 h-auto">
                 </div>
 
@@ -765,12 +765,17 @@
             <h2 class="text-xl font-bold" data-key="myOrdersTitle">My Previous Orders</h2>
             <button id="close-orders-btn" class="text-2xl">&times;</button>
         </div>
-        <!-- NEW: Order Filter Area -->
-        <div class="px-4 py-2 border-b bg-white flex justify-between items-center z-10 shadow-sm">
-            <label for="order-filter-select" class="text-sm font-medium text-gray-600" data-key="filterByMonth">Filter by Month:</label>
-            <select id="order-filter-select" class="text-sm border border-gray-300 rounded-md py-1 px-2 focus:ring-amber-500 focus:border-amber-500 bg-gray-50 font-medium text-gray-700 outline-none cursor-pointer">
-                <option value="all" data-key="allOrders">All Orders</option>
-            </select>
+        <!-- UPDATED: Dual Dropdown Order Filter Area -->
+        <div class="px-4 py-3 border-b bg-white flex flex-col sm:flex-row justify-between sm:items-center gap-2 z-10 shadow-sm">
+            <label class="text-sm font-medium text-gray-600" data-key="filterOrders">Filter Orders:</label>
+            <div class="flex gap-2 w-full sm:w-auto">
+                <select id="order-filter-month" class="flex-1 sm:flex-none text-sm border border-gray-300 rounded-md py-1.5 px-2 focus:ring-amber-500 focus:border-amber-500 bg-gray-50 font-medium text-gray-700 outline-none cursor-pointer">
+                    <option value="all" data-key="allMonths">All Months</option>
+                </select>
+                <select id="order-filter-year" class="flex-1 sm:flex-none text-sm border border-gray-300 rounded-md py-1.5 px-2 focus:ring-amber-500 focus:border-amber-500 bg-gray-50 font-medium text-gray-700 outline-none cursor-pointer">
+                    <option value="all" data-key="allYears">All Years</option>
+                </select>
+            </div>
         </div>
         <div id="orders-list-container" class="flex-grow p-4 overflow-y-auto bg-gray-50">
             <!-- Order history will be injected here -->
@@ -1154,9 +1159,10 @@
                 orderDetailsTitle: "Order Details",
                 shippingTo: "Shipping To:",
                 paymentMode: "Payment Mode:",
-                filterByMonth: "Filter by Month:",
-                allOrders: "All Orders",
-                noOrdersFiltered: "No orders found for this month."
+                filterOrders: "Filter Orders:",
+                allMonths: "All Months",
+                allYears: "All Years",
+                noOrdersFiltered: "No orders found for this selection."
             },
             hi: {
                 langSwitch: "English",
@@ -1217,9 +1223,10 @@
                 orderDetailsTitle: "ऑर्डर विवरण",
                 shippingTo: "डिलीवरी का पता:",
                 paymentMode: "भुगतान का तरीका:",
-                filterByMonth: "महीने से फ़िल्टर करें:",
-                allOrders: "सभी ऑर्डर",
-                noOrdersFiltered: "इस महीने के लिए कोई ऑर्डर नहीं मिला।"
+                filterOrders: "ऑर्डर फ़िल्टर करें:",
+                allMonths: "सभी महीने",
+                allYears: "सभी वर्ष",
+                noOrdersFiltered: "इस चयन के लिए कोई ऑर्डर नहीं मिला।"
             }
         };
         // --- END LANGUAGE ---
@@ -1285,9 +1292,11 @@
               orderDetailsModal = document.getElementById('order-details-modal'), // NEW
               orderDetailsContent = document.getElementById('order-details-content'), // NEW
               closeOrderDetailsBtn = document.getElementById('close-order-details-btn'), // NEW
-              orderFilterSelect = document.getElementById('order-filter-select'); // NEW
+              orderFilterMonth = document.getElementById('order-filter-month'), // NEW
+              orderFilterYear = document.getElementById('order-filter-year'); // NEW
 
-        let selectedOrderFilter = 'all'; // NEW: Track selected order filter
+        let selectedOrderMonth = 'all'; // NEW: Track selected order month
+        let selectedOrderYear = 'all';  // NEW: Track selected order year
         
         async function init() {
             loadStateFromLocalStorage();
@@ -1331,7 +1340,7 @@
             // 3. Re-render Cart & Wishlist to update labels
             renderCart();
             renderWishlist();
-            renderOrders(); // NEW: Render Orders
+            renderOrders(true); // Call renderOrders and force rebuild filters for new language
             
             // 4. Update Header Components (Floating Pill Text)
             updateCartHeader(); // Added this to refresh pill text immediately
@@ -2035,11 +2044,17 @@
                 }
             });
 
-            // NEW: Order Filter Listener
-            if (orderFilterSelect) {
-                orderFilterSelect.addEventListener('change', (e) => {
-                    selectedOrderFilter = e.target.value;
-                    renderOrders();
+            // NEW: Separate Order Filter Listeners for Month and Year
+            if (orderFilterMonth) {
+                orderFilterMonth.addEventListener('change', (e) => {
+                    selectedOrderMonth = e.target.value;
+                    renderOrders(false); // Re-render without rebuilding dropdown options completely
+                });
+            }
+            if (orderFilterYear) {
+                orderFilterYear.addEventListener('change', (e) => {
+                    selectedOrderYear = e.target.value;
+                    renderOrders(false); // Re-render without rebuilding dropdown options completely
                 });
             }
         }
@@ -2240,7 +2255,7 @@
             };
             orders.unshift(newOrder); // Add new order to start of array
             saveState();
-            renderOrders(); // Refresh order sidebar
+            renderOrders(true); // Refresh order sidebar and rebuild filters just in case there is a new month/year
 
             // --- TRACKING UPDATED (FINAL CONVERSION) ---
             // This is the final step, so we track it as a 'Purchase'
@@ -2675,54 +2690,64 @@
             wishlistItemsContainer.querySelectorAll('.move-to-cart-btn').forEach(btn => btn.addEventListener('click', e => moveFromWishlistToCart(JSON.parse(e.currentTarget.dataset.item))));
         }
         
-        // NEW: Update Dropdown options based on order history
+        // NEW: Update Dual Dropdown options based on order history
         function updateOrderFilterOptions() {
-            if (!orderFilterSelect) return;
-            const uniqueMonths = new Set();
+            if (!orderFilterMonth || !orderFilterYear) return;
+            const uniqueYears = new Set();
             
-            // Extract unique Month-Year combinations
+            // Extract unique Years
             orders.forEach(o => {
                 const d = new Date(o.id);
-                const monthStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-                uniqueMonths.add(monthStr);
+                uniqueYears.add(d.getFullYear().toString());
             });
             
             const strings = uiStrings[currentLang];
-            let html = `<option value="all">${strings.allOrders}</option>`;
             
-            // Generate translated month/year options
-            Array.from(uniqueMonths).sort().reverse().forEach(monthVal => {
-                const [year, month] = monthVal.split('-');
-                const d = new Date(year, parseInt(month) - 1, 1);
-                const locale = currentLang === 'hi' ? 'hi-IN' : 'en-US';
-                const monthName = d.toLocaleString(locale, { month: 'short', year: 'numeric' });
-                html += `<option value="${monthVal}">${monthName}</option>`;
+            // Generate Year Options
+            let yearHtml = `<option value="all">${strings.allYears}</option>`;
+            Array.from(uniqueYears).sort().reverse().forEach(year => {
+                yearHtml += `<option value="${year}">${year}</option>`;
             });
+            orderFilterYear.innerHTML = yearHtml;
             
-            orderFilterSelect.innerHTML = html;
-            
-            // Keep previous selection if it still exists
-            if (Array.from(orderFilterSelect.options).some(o => o.value === selectedOrderFilter)) {
-                orderFilterSelect.value = selectedOrderFilter;
-            } else {
-                orderFilterSelect.value = 'all';
-                selectedOrderFilter = 'all';
+            // Generate Month Options (Always 1-12)
+            let monthHtml = `<option value="all">${strings.allMonths}</option>`;
+            for(let m = 0; m < 12; m++) {
+                // Use a standard non-leap year Date to grab month names
+                const d = new Date(2000, m, 1);
+                const locale = currentLang === 'hi' ? 'hi-IN' : 'en-US';
+                const monthName = d.toLocaleString(locale, { month: 'short' });
+                const monthVal = String(m + 1).padStart(2, '0');
+                monthHtml += `<option value="${monthVal}">${monthName}</option>`;
             }
+            orderFilterMonth.innerHTML = monthHtml;
+            
+            // Keep previous selections
+            orderFilterMonth.value = selectedOrderMonth;
+            orderFilterYear.value = selectedOrderYear;
         }
 
-        // NEW: Render Orders
-        function renderOrders() {
-            updateOrderFilterOptions(); // Ensure dropdown is populated and translated
+        // UPDATED: Render Orders with dual filters
+        function renderOrders(rebuildFilters = false) {
+            if (rebuildFilters) {
+                updateOrderFilterOptions(); 
+            }
             
             const strings = uiStrings[currentLang];
             let filteredOrders = orders;
             
-            // Apply filtering logic
-            if (selectedOrderFilter !== 'all') {
-                filteredOrders = orders.filter(o => {
+            // Apply Year filter
+            if (selectedOrderYear !== 'all') {
+                filteredOrders = filteredOrders.filter(o => {
                     const d = new Date(o.id);
-                    const monthStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-                    return monthStr === selectedOrderFilter;
+                    return d.getFullYear().toString() === selectedOrderYear;
+                });
+            }
+            // Apply Month filter
+            if (selectedOrderMonth !== 'all') {
+                filteredOrders = filteredOrders.filter(o => {
+                    const d = new Date(o.id);
+                    return String(d.getMonth() + 1).padStart(2, '0') === selectedOrderMonth;
                 });
             }
 
