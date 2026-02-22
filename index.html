@@ -168,10 +168,14 @@
             padding: 10px;
             position: absolute;
             opacity: 0;
+            pointer-events: none; /* NEW: Prevents clicking invisible layered images */
+            z-index: 0; /* NEW */
             transition: opacity 0.3s ease-in-out;
         }
         .product-image-container .gallery-image.active {
             opacity: 1;
+            pointer-events: auto; /* NEW: Allows clicking only the visible image */
+            z-index: 10; /* NEW */
         }
         .gallery-nav {
             position: absolute;
@@ -181,6 +185,7 @@
             display: flex;
             justify-content: space-between;
             padding: 0 0.5rem;
+            z-index: 20; /* Ensure arrows are above images */
         }
         .gallery-nav button {
             background-color: rgba(255, 255, 255, 0.7);
@@ -655,16 +660,17 @@
         </div>
     </div>
 
-    <!-- Image Lightbox Modal (NEW) -->
-    <div id="lightbox-modal" class="fixed inset-0 z-[80] bg-black bg-opacity-95 hidden flex justify-center items-center p-2 opacity-0 transition-opacity duration-300">
-        <button id="close-lightbox-btn" class="absolute top-4 right-4 text-white text-4xl hover:text-gray-300 z-[90]">&times;</button>
-        <img id="lightbox-image" src="" alt="Full View" class="max-w-full max-h-full object-contain rounded-md shadow-2xl scale-95 transition-transform duration-300">
+    <!-- Image Lightbox Modal (UPDATED) -->
+    <div id="lightbox-modal" class="fixed inset-0 z-[100] bg-black bg-opacity-95 hidden flex justify-center items-center p-2 opacity-0 transition-opacity duration-300">
+        <!-- Made the close button extremely visible -->
+        <button id="close-lightbox-btn" class="absolute top-6 right-6 md:top-8 md:right-8 bg-white/20 hover:bg-white/40 border-2 border-white/50 rounded-full w-12 h-12 flex items-center justify-center text-white text-4xl z-[110] transition-colors focus:outline-none shadow-lg">&times;</button>
+        <img id="lightbox-image" src="" alt="Full View" class="max-w-[95vw] max-h-[90vh] object-contain rounded-md shadow-2xl scale-95 transition-transform duration-300">
     </div>
 
     <!-- App-like Footer Navigation (Revised Order) -->
     <footer class="app-footer flex justify-around items-start">
         <!-- 1. About Us Icon -->
-        <a href="https://gurusampoorna.com/" class="footer-btn" onclick="gtag('event', 'about_us_click', { 'event_category': 'engagement', 'event_label': 'Footer About Us Icon' });">
+        <a href="https://gurusampoorna.com/" id="footer-about-btn" class="footer-btn" onclick="gtag('event', 'about_us_click', { 'event_category': 'engagement', 'event_label': 'Footer About Us Icon' });">
              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
              <span class="mt-1" data-key="aboutUs">About Us</span>
         </a>
@@ -863,6 +869,23 @@
 
 
     <script>
+    // Name this tab so the main website can reuse it when you click "Order Now" there
+    window.name = 'gurusampoorna_catalogue';
+    
+    // NEW: Keep a memory reference to the main site window to prevent multiple tabs
+    let mainSiteWindow = null;
+    function openMainSite(e) {
+        if (e) e.preventDefault();
+        
+        // If the window exists and hasn't been closed by the user, focus it
+        if (mainSiteWindow && !mainSiteWindow.closed) {
+            mainSiteWindow.focus();
+        } else {
+            // Otherwise, open a new one
+            mainSiteWindow = window.open('https://gurusampoorna.com/', 'gurusampoorna_main');
+        }
+    }
+    
     document.addEventListener('DOMContentLoaded', () => {
         const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTOBYoHgJGxEOiVx9GvYcXTvzsRT-1kK-P3254UKV-N3BIHWAVT4-6kdVtCi4QJeo4wwsInNY-6Wp3D/pub?output=csv';
         let cart = [], wishlist = [], orders = [], allProducts = [], allCategories = {};
@@ -1744,11 +1767,15 @@
                 });
             }
             
-            // Logo Click -> Redirect to Home
+            // Logo Click -> Redirect to Home (in the tracked tab)
             if (headerLogo) {
-                headerLogo.addEventListener('click', () => {
-                    window.location.href = 'https://gurusampoorna.com/';
-                });
+                headerLogo.addEventListener('click', openMainSite);
+            }
+
+            // About Us Footer Click -> Redirect to Home (in the tracked tab)
+            const footerAboutBtn = document.getElementById('footer-about-btn');
+            if (footerAboutBtn) {
+                footerAboutBtn.addEventListener('click', openMainSite);
             }
 
             // Search Icon Click -> Focus Input (Fix for clickability)
@@ -1971,7 +1998,8 @@
 
             // Delegation for gallery images in Product Modal
             document.body.addEventListener('click', (e) => {
-                if (e.target.classList.contains('gallery-image')) {
+                // Ensure we only open the image if it's the currently active (visible) one
+                if (e.target.classList.contains('gallery-image') && e.target.classList.contains('active')) {
                     openLightbox(e.target.src);
                 }
             });
