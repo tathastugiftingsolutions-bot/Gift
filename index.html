@@ -41,6 +41,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alice&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- NEW: Google Maps API -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAXJmsVfmTQdM9PUlFNtHnC7f6hwYZv8Nw"></script>
+
     <style>
         html {
             scroll-behavior: smooth;
@@ -670,7 +674,7 @@
     <!-- App-like Footer Navigation (Revised Order) -->
     <footer class="app-footer flex justify-around items-start">
         <!-- 1. About Us Icon -->
-        <a href="https://gurusampoorna.com/" id="footer-about-btn" class="footer-btn" onclick="gtag('event', 'about_us_click', { 'event_category': 'engagement', 'event_label': 'Footer About Us Icon' });">
+        <a href="https://gurusampoorna.com/" target="gs_landing" id="footer-about-btn" class="footer-btn" onclick="gtag('event', 'about_us_click', { 'event_category': 'engagement', 'event_label': 'Footer About Us Icon' });">
              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
              <span class="mt-1" data-key="aboutUs">About Us</span>
         </a>
@@ -856,13 +860,46 @@
             <!-- Step 3: Payment Method Selection (NEW) -->
             <div id="checkout-step-3" class="hidden">
                 <h3 class="text-2xl font-brand font-bold text-gray-800 mb-6 text-center" data-key="selectPayment">Select Payment Method</h3>
+                
+                <!-- NEW: Optional Location Pinpoint Button -->
+                <div class="mb-6 border-b border-gray-100 pb-6">
+                    <button id="pinpoint-location-btn" class="w-full bg-blue-50 border-2 border-black text-blue-800 py-3 px-4 rounded-lg flex flex-col items-center justify-center transition-all hover:bg-blue-100 shadow-sm relative group cursor-pointer">
+                        <span class="font-extrabold text-base flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>
+                            <span data-key="fasterDelivery">Want Faster Delivery?</span>
+                        </span>
+                        <span class="text-xs font-bold text-red-600 mt-1 text-center" data-key="pinpointOptional">Give location permission to pinpoint the address (Optional)</span>
+                    </button>
+                </div>
+
                 <div class="flex flex-col gap-3">
-                    <button class="btn-primary w-full py-3 rounded-lg font-semibold payment-btn shadow-sm hover:shadow-md transition-all" data-mode="Cash on Delivery (COD)" data-key="codBtn">Cash on Delivery (COD)</button>
-                    <button class="bg-gray-200 text-gray-800 w-full py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors payment-btn shadow-sm" data-mode="Prepaid" data-key="prepaidBtn">Prepaid (UPI/Netbanking)</button>
+                    <button class="btn-primary w-full py-3 rounded-lg font-semibold payment-btn shadow-sm hover:shadow-md transition-all block text-center" data-mode="Cash on Delivery (COD)" data-key="codBtn">Cash on Delivery (COD)</button>
+                    <!-- UPDATED: Button now acts as a standard block to prevent flexbox rendering bugs on iOS Safari -->
+                    <button class="bg-gray-200 text-gray-800 w-full py-3 px-2 h-auto min-h-[4rem] rounded-lg hover:bg-gray-300 transition-colors payment-btn shadow-sm block text-center" data-mode="Prepaid">
+                        <span class="block font-semibold text-sm sm:text-base leading-tight text-center pointer-events-none" data-key="prepaidBtn">Prepaid (UPI/Netbanking)</span>
+                        <span class="block text-red-600 text-[11px] sm:text-xs font-bold mt-1 text-center pointer-events-none whitespace-normal" data-key="prepaidNote">(Details will be shared on WhatsApp.)</span>
+                    </button>
                 </div>
             </div>
 
             <button id="close-checkout-modal-btn" class="absolute top-2 right-4 text-2xl text-gray-500 hover:text-gray-800">&times;</button>
+        </div>
+    </div>
+
+    <!-- NEW: Map Modal for Pinpointing Location -->
+    <div id="map-modal" class="modal-overlay hidden fixed inset-0 bg-black bg-opacity-60 z-[70] flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-md transform scale-95 transition-transform duration-300 relative flex flex-col h-[70vh]">
+            <div class="p-4 border-b flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800" data-key="adjustPin">Adjust your pin</h3>
+                </div>
+                <button id="close-map-btn" class="text-2xl text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <!-- Z-0 is important so leaflet zoom controls don't overlap the header -->
+            <div id="map-container" class="flex-grow w-full bg-gray-100 z-0 min-h-[300px]"></div>
+            <div class="p-4 border-t bg-white">
+                <button id="save-location-btn" class="btn-primary w-full py-3 rounded-lg font-semibold" data-key="saveLocation">Save Location</button>
+            </div>
         </div>
     </div>
 
@@ -893,8 +930,8 @@
         if (mainSiteWindow && !mainSiteWindow.closed) {
             mainSiteWindow.focus();
         } else {
-            // Otherwise, open a new one
-            mainSiteWindow = window.open('https://gurusampoorna.com/', 'gurusampoorna_main');
+            // Otherwise, open a new one pointing specifically to the landing page's tab name
+            mainSiteWindow = window.open('https://gurusampoorna.com/', 'gs_landing');
         }
     }
     
@@ -1142,6 +1179,7 @@
                 selectPayment: "Select Payment Method",
                 codBtn: "Cash on Delivery (COD)",
                 prepaidBtn: "Prepaid (UPI/Netbanking)",
+                prepaidNote: "(Details will be shared on WhatsApp.)",
                 footerCopy: "© 2024 Guru Sampoorna. All Rights Reserved.",
                 support: "Support",
                 contactSupport: "Contact Support",
@@ -1162,12 +1200,21 @@
                 filterOrders: "Filter Orders:",
                 allMonths: "All Months",
                 allYears: "All Years",
-                noOrdersFiltered: "No orders found for this selection."
+                noOrdersFiltered: "No orders found for this selection.",
+                cartUpdated: "Cart updated with latest prices and availability.",
+                // NEW STRINGS
+                fasterDelivery: "Want Faster Delivery?",
+                pinpointOptional: "Give location permission to pinpoint the address (Optional)",
+                savedThanks: "Saved! Thanks for sharing.",
+                saveLocation: "Save Location",
+                locating: "Locating...",
+                adjustPin: "Adjust your pin",
+                locationDenied: "Location permission denied. You can manually drag the pin."
             },
             hi: {
                 langSwitch: "English",
                 searchPlaceholder: "खोजें...",
-                noResults: "कोई परिणाम नहीं मिला",
+                noResults: "कोई परिणाम मिला",
                 wishlist: "विशलिस्ट",
                 cart: "कार्ट",
                 home: "होम",
@@ -1206,6 +1253,7 @@
                 selectPayment: "भुगतान का तरीका चुनें",
                 codBtn: "कैश ऑन डिलीवरी (COD)",
                 prepaidBtn: "प्रीपेड (UPI/नेटबैंकिंग)",
+                prepaidNote: "(विवरण व्हाट्सएप पर साझा किया जाएगा।)",
                 footerCopy: "© 2024 गुरु संपूर्ण। सर्वाधिकार सुरक्षित।",
                 support: "सहयोग",
                 contactSupport: "संपर्क करें",
@@ -1226,7 +1274,16 @@
                 filterOrders: "ऑर्डर फ़िल्टर करें:",
                 allMonths: "सभी महीने",
                 allYears: "सभी वर्ष",
-                noOrdersFiltered: "इस चयन के लिए कोई ऑर्डर नहीं मिला।"
+                noOrdersFiltered: "इस चयन के लिए कोई ऑर्डर नहीं मिला।",
+                cartUpdated: "नवीनतम कीमतों और उपलब्धता के साथ कार्ट अपडेट की गई।",
+                // NEW STRINGS
+                fasterDelivery: "तेज़ डिलीवरी चाहिए?",
+                pinpointOptional: "पता सुनिश्चित करने के लिए लोकेशन की अनुमति दें (वैकल्पिक)",
+                savedThanks: "सेव हो गया! साझा करने के लिए धन्यवाद।",
+                saveLocation: "लोकेशन सेव करें",
+                locating: "खोज रहे हैं...",
+                adjustPin: "अपना पिन सेट करें",
+                locationDenied: "लोकेशन की अनुमति नहीं मिली। आप पिन को मैन्युअली खिसका सकते हैं।"
             }
         };
         // --- END LANGUAGE ---
@@ -1293,11 +1350,26 @@
               orderDetailsContent = document.getElementById('order-details-content'), // NEW
               closeOrderDetailsBtn = document.getElementById('close-order-details-btn'), // NEW
               orderFilterMonth = document.getElementById('order-filter-month'), // NEW
-              orderFilterYear = document.getElementById('order-filter-year'); // NEW
+              orderFilterYear = document.getElementById('order-filter-year'), // NEW
+              // MAP ELEMENTS
+              pinpointLocationBtn = document.getElementById('pinpoint-location-btn'),
+              mapModal = document.getElementById('map-modal'),
+              closeMapBtn = document.getElementById('close-map-btn'),
+              saveLocationBtn = document.getElementById('save-location-btn');
 
         let selectedOrderMonth = 'all'; // NEW: Track selected order month
         let selectedOrderYear = 'all';  // NEW: Track selected order year
         
+        // NEW: Auto-scroll variables for category strip
+        let categoryScrollTimeout;
+        let categoryScrollInterval;
+        let currentScrollIndex = 0;
+        
+        // NEW: Map State Variables
+        let userLocation = null;
+        let googleMap = null;
+        let mapMarker = null;
+
         async function init() {
             loadStateFromLocalStorage();
             
@@ -1305,6 +1377,9 @@
             renderAll(); 
 
             await fetchAndRenderProducts();
+            
+            // NEW: Sync local cart/wishlist with real-time spreadsheet data
+            syncStateWithLiveProducts();
             
             setupEventListeners();
             updateAllCartUI();
@@ -1631,6 +1706,54 @@
                     </button>`;
                 }).join('');
             }
+            
+            // NEW: Initialize Auto-Scrolling for the Top Strip
+            initCategoryAutoScroll();
+        }
+
+        // NEW FUNCTION: Auto-scroll logic for category strip
+        function initCategoryAutoScroll() {
+            if (!topCategoryStrip) return;
+
+            // Clear any existing timers (important if language is switched and re-rendered)
+            clearTimeout(categoryScrollTimeout);
+            clearInterval(categoryScrollInterval);
+            currentScrollIndex = 0;
+
+            const buttons = topCategoryStrip.querySelectorAll('.sidebar-category-btn');
+            if (buttons.length <= 1) return;
+
+            // Smart UX: Stop auto-scrolling if the user interacts with the strip manually
+            const stopScroll = () => {
+                clearTimeout(categoryScrollTimeout);
+                clearInterval(categoryScrollInterval);
+            };
+            topCategoryStrip.addEventListener('touchstart', stopScroll, { passive: true });
+            topCategoryStrip.addEventListener('mousedown', stopScroll);
+            topCategoryStrip.addEventListener('wheel', stopScroll, { passive: true });
+
+            // 1. Wait 30 seconds initially (CHANGED from 15 to 30)
+            categoryScrollTimeout = setTimeout(() => {
+                // 2. Start moving every 3 seconds
+                categoryScrollInterval = setInterval(() => {
+                    currentScrollIndex++;
+                    
+                    // 3. Loop back to the start if at the end
+                    if (currentScrollIndex >= buttons.length) {
+                        currentScrollIndex = 0;
+                    }
+                    
+                    const targetBtn = buttons[currentScrollIndex];
+                    if (targetBtn) {
+                         // Calculate position and scroll smoothly
+                         const scrollPos = targetBtn.offsetLeft - topCategoryStrip.offsetLeft;
+                         topCategoryStrip.scrollTo({
+                             left: scrollPos,
+                             behavior: 'smooth'
+                         });
+                    }
+                }, 3000); // 3 seconds interval
+            }, 30000); // 30 seconds initial delay
         }
 
         // NEW FUNCTION: Render numbered pagination at the bottom
@@ -1941,7 +2064,7 @@
             // Payment selection buttons
             document.querySelectorAll('.payment-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    handlePaymentSelection(e.target.dataset.mode);
+                    handlePaymentSelection(e.currentTarget.dataset.mode);
                 });
             });
 
@@ -2057,6 +2180,11 @@
                     renderOrders(false); // Re-render without rebuilding dropdown options completely
                 });
             }
+            
+            // --- MAP EVENT LISTENERS ---
+            if (pinpointLocationBtn) pinpointLocationBtn.addEventListener('click', handlePinpointLocation);
+            if (closeMapBtn) closeMapBtn.addEventListener('click', closeMapModal);
+            if (saveLocationBtn) saveLocationBtn.addEventListener('click', saveLocationFromMap);
         }
 
         // --- Product Modal Logic ---
@@ -2240,10 +2368,116 @@
             });
         }
         
+        // --- NEW MAP LOGIC ---
+        function handlePinpointLocation() {
+            if (userLocation) {
+                // If user already saved a location, open it directly to allow editing
+                openMapModal(userLocation.lat, userLocation.lng);
+                return;
+            }
+
+            const strings = uiStrings[currentLang];
+            
+            // Show loading state on button
+            const originalHTML = pinpointLocationBtn.innerHTML;
+            pinpointLocationBtn.innerHTML = `<span class="font-bold text-sm flex items-center gap-2"><svg class="animate-spin h-5 w-5 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span data-key="locating">${strings.locating || 'Locating...'}</span></span>`;
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        openMapModal(lat, lng);
+                        pinpointLocationBtn.innerHTML = originalHTML; // Reset
+                    },
+                    (error) => {
+                        console.warn("Geolocation error:", error);
+                        // Fallback to center of Indore if permission denied
+                        openMapModal(22.7196, 75.8577);
+                        pinpointLocationBtn.innerHTML = originalHTML; // Reset
+                        showToast(strings.locationDenied || "Location permission denied. You can manually drag the pin.", "error");
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            } else {
+                openMapModal(22.7196, 75.8577);
+                pinpointLocationBtn.innerHTML = originalHTML; // Reset
+            }
+        }
+        
+        function openMapModal(lat, lng) {
+            mapModal.classList.remove('hidden');
+            setTimeout(() => {
+                mapModal.classList.remove('opacity-0');
+                mapModal.querySelector('.modal-content').classList.remove('scale-95');
+            }, 10);
+            
+            // Initialize map if not already done
+            if (!googleMap) {
+                // Important: Maps require a slight delay to render correctly inside a dynamic modal
+                setTimeout(() => {
+                    const mapOptions = {
+                        center: { lat: lat, lng: lng },
+                        zoom: 16,
+                        mapTypeControl: false,
+                        streetViewControl: false
+                    };
+                    googleMap = new google.maps.Map(document.getElementById('map-container'), mapOptions);
+                    
+                    mapMarker = new google.maps.Marker({
+                        position: { lat: lat, lng: lng },
+                        map: googleMap,
+                        draggable: true,
+                        animation: google.maps.Animation.DROP
+                    });
+                }, 300);
+            } else {
+                setTimeout(() => {
+                    const pos = { lat: lat, lng: lng };
+                    googleMap.setCenter(pos);
+                    mapMarker.setPosition(pos);
+                    google.maps.event.trigger(googleMap, 'resize');
+                }, 300);
+            }
+        }
+        
+        function closeMapModal() {
+            mapModal.querySelector('.modal-content').classList.add('scale-95');
+            mapModal.classList.add('opacity-0');
+            setTimeout(() => mapModal.classList.add('hidden'), 300);
+        }
+        
+        function saveLocationFromMap() {
+            const pos = mapMarker.getPosition();
+            userLocation = { lat: pos.lat(), lng: pos.lng() };
+            closeMapModal();
+            
+            // Update button to green "Saved" state with Edit pencil icon
+            const strings = uiStrings[currentLang];
+            pinpointLocationBtn.className = 'w-full bg-green-50 border-2 border-green-600 text-green-800 py-3 px-4 rounded-lg flex items-center justify-center transition-all shadow-md relative group cursor-pointer';
+            pinpointLocationBtn.innerHTML = `
+                <span class="font-bold text-sm flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                    <span data-key="savedThanks">${strings.savedThanks || 'Saved! Thanks for sharing.'}</span>
+                </span>
+                <span class="absolute right-4 text-green-700 hover:text-green-900 flex flex-col items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg>
+                    <span class="text-[10px] leading-tight">Edit</span>
+                </span>
+            `;
+        }
+        // --- END MAP LOGIC ---
+
         function generateWhatsAppLink(address = '', paymentMode = '') {
             let orderDetails = cart.map(i => `*${i.name}*\n - Size: ${i.variant}\n - Qty: ${i.quantity}\n - Price: ₹${(i.price * i.quantity).toFixed(2)}`).join('\n\n');
             const total = cart.reduce((acc, i) => acc + i.price * i.quantity, 0);
             
+            // NEW: Build the map link if it exists
+            let mapLinkStr = '';
+            if (userLocation) {
+                mapLinkStr = `https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}`;
+            }
+
             // --- NEW: Save to Previous Orders ---
             const newOrder = {
                 id: Date.now(), // unique timestamp id
@@ -2251,7 +2485,8 @@
                 items: [...cart], // Clone cart items
                 total: total,
                 address: address,
-                paymentMode: paymentMode
+                paymentMode: paymentMode,
+                location: mapLinkStr // Save the link to order history
             };
             orders.unshift(newOrder); // Add new order to start of array
             saveState();
@@ -2280,6 +2515,11 @@
 
             if (address.trim() !== '') {
                 finalMessage += `*Shipping Address:*\n${address.trim()}\n\n`;
+            }
+            
+            // NEW: Insert Pin location in WhatsApp message
+            if (mapLinkStr !== '') {
+                finalMessage += `*Exact Delivery Pin:*\n${mapLinkStr}\n\n`;
             }
             
             if (paymentMode.trim() !== '') {
@@ -2372,6 +2612,20 @@
             checkoutStep3.classList.add('hidden');
             addressError.classList.add('hidden');
             shippingAddressInput.value = '';
+
+            // Reset Location Button state for a fresh checkout
+            userLocation = null;
+            if (pinpointLocationBtn) {
+                const strings = uiStrings[currentLang];
+                pinpointLocationBtn.className = 'w-full bg-blue-50 border-2 border-black text-blue-800 py-3 px-4 rounded-lg flex flex-col items-center justify-center transition-all hover:bg-blue-100 shadow-sm relative group cursor-pointer';
+                pinpointLocationBtn.innerHTML = `
+                    <span class="font-extrabold text-base flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>
+                        <span data-key="fasterDelivery">${strings.fasterDelivery || "Want Faster Delivery?"}</span>
+                    </span>
+                    <span class="text-xs font-bold text-red-600 mt-1 text-center" data-key="pinpointOptional">${strings.pinpointOptional || "Give location permission to pinpoint the address (Optional)"}</span>
+                `;
+            }
 
             checkoutModal.classList.remove('hidden');
             setTimeout(() => checkoutModal.classList.remove('opacity-0'), 10);
@@ -2593,6 +2847,70 @@
             localStorage.setItem(CART_KEY, JSON.stringify(cart));
             localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
             localStorage.setItem(ORDERS_KEY, JSON.stringify(orders)); // Save Orders
+        }
+
+        // NEW: Sync local cart and wishlist with live spreadsheet data
+        function syncStateWithLiveProducts() {
+            let cartModified = false;
+            let updatedCart = [];
+            
+            // Check Cart Items
+            for (let item of cart) {
+                const liveProduct = allProducts.find(p => p.id === item.id);
+                if (!liveProduct) { cartModified = true; continue; } // Product entirely removed from sheet
+                
+                const liveVariant = liveProduct.variants.find(v => v.size === item.variant);
+                if (!liveVariant) { cartModified = true; continue; } // Specific variant removed from sheet
+                
+                // Update Price if changed
+                if (item.price !== liveVariant.price) {
+                    item.price = liveVariant.price;
+                    cartModified = true;
+                }
+                
+                // Keep image fresh if changed
+                let liveImage = liveProduct.imageUrl;
+                if (liveVariant.images && liveVariant.images.length > 0) { liveImage = liveVariant.images[0]; }
+                if (liveImage && item.image !== liveImage) { item.image = liveImage; }
+                
+                updatedCart.push(item);
+            }
+
+            let wishlistModified = false;
+            let updatedWishlist = [];
+            
+            // Check Wishlist Items
+            for (let item of wishlist) {
+                const liveProduct = allProducts.find(p => p.id === item.id);
+                if (!liveProduct) { wishlistModified = true; continue; }
+                
+                const liveVariant = liveProduct.variants.find(v => v.size === item.variant);
+                if (!liveVariant) { wishlistModified = true; continue; }
+                
+                if (item.price !== liveVariant.price) { 
+                    item.price = liveVariant.price; 
+                    wishlistModified = true; 
+                }
+                
+                let liveImage = liveProduct.imageUrl;
+                if (liveVariant.images && liveVariant.images.length > 0) { liveImage = liveVariant.images[0]; }
+                if (liveImage && item.image !== liveImage) { item.image = liveImage; }
+                
+                updatedWishlist.push(item);
+            }
+
+            // Save and notify if changes occurred
+            if (cartModified || wishlistModified) {
+                cart = updatedCart;
+                wishlist = updatedWishlist;
+                saveState();
+                
+                if (cartModified) {
+                    // Show notification that the cart was updated due to real-time changes
+                    const strings = uiStrings[currentLang];
+                    showToast(strings.cartUpdated, 'success');
+                }
+            }
         }
 
         function addToCart(newItem) {
